@@ -1,51 +1,78 @@
 package com.reine.text2image;
 
+import lombok.Builder;
+import lombok.Data;
+import lombok.NoArgsConstructor;
+import lombok.experimental.SuperBuilder;
+
 import java.awt.*;
 
 /**
  * @author reine
  */
+@Data
+@NoArgsConstructor
+@SuperBuilder
 public class T2IConstant {
+
     /**
      * 每行字符数：30个中文字符(=60英文字符)
      */
-    static final int LINE_CHAR_COUNT = 30 * 2;
+    @Builder.Default
+    private int lineCharCount = 30 * 2;
+
     /**
      * 字符大小
      */
-    static final int CHAR_SIZE = 32;
+    @Builder.Default
+    private int charSize = 32;
+
     /**
-     * 字符高度
+     * 行间距
      */
-    static final int CHAR_SIZE_H = 47;
+    @Builder.Default
+    private int lineSpacing = 5;
+
     /**
-     * tab占用的长度
+     * \t占用的长度
      */
-    static final int TABLE_WIDTH = 4;
+    @Builder.Default
+    private int tableWidth = 4;
 
     /**
      * 字体
      */
-    static final String FONT_NAME = "JetBrains Mono";
+    @Builder.Default
+    private String fontName = "宋体";
+
     /**
      * 字体样式
      */
-    static final int FONT_PLAIN = Font.PLAIN;
+    @Builder.Default
+    private int fontPlain = Font.PLAIN;
+
     /**
      * 每行最大字符数
      */
-    static int LINE_CHAR_COUNT_MAX = 0;
+    @Builder.Default
+    private int lineCharCountMax = 0;
+
     /**
      * 图片背景颜色
      */
-    static Color BACKGROUD_COLOR = new Color(255, 252, 245);
+    @Builder.Default
+    private Color backgroudColor = new Color(255, 252, 245);
+
     /**
      * 字体颜色
      */
-    static Color FONT_COLOR = new Color(125, 101, 89);
+    @Builder.Default
+    private Color fontColor = new Color(125, 101, 89);
+
     /**
      * 边框颜色
      */
-    static Color RECT_COLOR = new Color(220, 211, 196);
+    @Builder.Default
+    private Color rectColor = new Color(220, 211, 196);
 
 }

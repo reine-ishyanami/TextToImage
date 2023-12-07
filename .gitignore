@@ -44,3 +44,5 @@ bin/
 /*.txt
 /*.jpg
 .idea/
+*.ttf
+*.otf
