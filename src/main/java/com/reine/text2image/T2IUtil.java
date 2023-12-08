@@ -9,9 +9,7 @@ import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
-import java.util.Arrays;
 import java.util.Base64;
-import java.util.List;
 
 /**
  * 文生图工具类
@@ -25,20 +23,28 @@ public class T2IUtil {
 
     private Font font;
 
+    private int lineCharCountMax = 0;
+
     public T2IUtil(T2IConstant constant) {
         this.constant = constant;
     }
 
     /**
      * 判断平台原生是否安装了此字体
+     *
      * @param fontName 字体名称
-     * @return 是否支持
+     * @return 如果支持此字体，则返回该字体名称，否则返回""
      */
-    public boolean isPlatformSupportFont(String fontName){
-        GraphicsEnvironment ge = GraphicsEnvironment.getLocalGraphicsEnvironment();
-        String[] fontNames = ge.getAvailableFontFamilyNames();
-        List<String> list = Arrays.asList(fontNames);
-        return list.stream().anyMatch(s -> s.contains(fontName));
+    public String isPlatformSupportFont(String fontName) {
+        if (font == null) {
+            GraphicsEnvironment ge = GraphicsEnvironment.getLocalGraphicsEnvironment();
+            String[] fontArray = ge.getAvailableFontFamilyNames();
+            for (String font : fontArray)
+                if (font.contains(fontName))
+                    return font;
+            return "";
+        } else
+            return font.getFontName().contains(fontName) ? font.getFontName() : "";
     }
 
 
@@ -51,6 +57,7 @@ public class T2IUtil {
     public void useCustomFont(File fontFile) {
         // 创建字体对象
         Font jetbrainsMonoFont = Font.createFont(Font.TRUETYPE_FONT, fontFile);
+        System.out.println(jetbrainsMonoFont.getFontName());
         // 设置字体大小和样式
         font = jetbrainsMonoFont.deriveFont(constant.getFontPlain(), constant.getCharSize());
     }
@@ -62,7 +69,7 @@ public class T2IUtil {
      * @return 处理后的字符串
      */
     private String lineBreak(String line) {
-        constant.setLineCharCountMax(0);
+        lineCharCountMax = 0;
         StringBuilder result = new StringBuilder();
         int width = 0;
         for (char c : line.toCharArray()) {
@@ -91,10 +98,10 @@ public class T2IUtil {
             if (width >= constant.getLineCharCount()) {
                 result.append('\n');
                 width = 0;
-                constant.setLineCharCountMax(constant.getLineCharCount());
+                lineCharCountMax = constant.getLineCharCount();
             }
-            if (width > constant.getLineCharCountMax()) {
-                constant.setLineCharCountMax(width);
+            if (width > lineCharCountMax) {
+                lineCharCountMax = width;
             }
         }
 
@@ -120,17 +127,18 @@ public class T2IUtil {
                     constant.getCharSize()
             );
         }
-        constant.setLineCharCountMax(0);
+        lineCharCountMax = 0;
         String outputStr = lineBreak(msg);
         int lines = outputStr.split("\n").length;
 
-        int imageWidth = constant.getLineCharCountMax() * constant.getCharSize() / 2 + 84;
+        int imageWidth = lineCharCountMax * constant.getCharSize() / 2 + 84;
         int lineHeight = constant.getCharSize() + constant.getLineSpacing();
         int imageHeight = lineHeight * lines + 84;
 
         BufferedImage image = new BufferedImage(imageWidth, imageHeight, BufferedImage.TYPE_INT_RGB);
         Graphics2D graphics2D = image.createGraphics();
-        graphics2D.setColor(constant.getBackgroudColor());
+        graphics2D.setColor(constant.getBackgroundColor());
+        // 背景颜色
         graphics2D.fillRect(0, 0, imageWidth, imageHeight);
         graphics2D.setColor(constant.getFontColor());
         graphics2D.setFont(font);
@@ -138,12 +146,14 @@ public class T2IUtil {
         String[] linesArray = outputStr.split("\n");
         // 文本距离顶部的高度
         int y = 40 + lineHeight;
+        // 文本
         for (String line : linesArray) {
             graphics2D.drawString(line, 42, y);
             y += lineHeight;
         }
+        // 边框
         graphics2D.setColor(constant.getRectColor());
-        graphics2D.drawRect(10, 10, constant.getLineCharCountMax() * constant.getCharSize() / 2 + 62, lineHeight * lines + 62);
+        graphics2D.drawRect(10, 10, lineCharCountMax * constant.getCharSize() / 2 + 62, lineHeight * lines + 62);
         ByteArrayOutputStream outputStream = new ByteArrayOutputStream();
         ImageIO.write(image, "JPEG", outputStream);
         return outputStream;

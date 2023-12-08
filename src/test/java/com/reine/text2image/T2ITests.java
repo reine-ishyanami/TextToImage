@@ -5,14 +5,10 @@ import lombok.extern.slf4j.Slf4j;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
-import java.awt.*;
 import java.io.File;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
-import java.nio.file.StandardOpenOption;
-import java.util.Arrays;
-import java.util.List;
 
 /**
  * @author reine
@@ -21,16 +17,6 @@ import java.util.List;
 public class T2ITests {
 
     private T2IUtil t2IUtil;
-
-    @SneakyThrows
-    @Test
-    void get_all_font() {
-        GraphicsEnvironment ge = GraphicsEnvironment.getLocalGraphicsEnvironment();
-        String[] fontNames = ge.getAvailableFontFamilyNames();
-        List<String> list = Arrays.asList(fontNames);
-        Path path = Path.of("all_fonts.txt");
-        Files.write(path, list, StandardOpenOption.CREATE);
-    }
 
     @SneakyThrows
     @Test
@@ -54,6 +40,7 @@ public class T2ITests {
         String path = getClass().getResource("/font/SourceHanSansCN-Medium.otf").getPath();
         path = path.substring(1);
         File file = Paths.get(path).toFile();
+        // 设置图片参数
         T2IConstant constant = T2IConstant.builder().build();
         t2IUtil = new T2IUtil(constant);
         t2IUtil.useCustomFont(file);

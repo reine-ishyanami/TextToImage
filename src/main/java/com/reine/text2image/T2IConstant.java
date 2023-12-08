@@ -16,7 +16,7 @@ import java.awt.*;
 public class T2IConstant {
 
     /**
-     * 每行字符数：30个中文字符(=60英文字符)
+     * 每行最大字符数：30个中文字符(=60英文字符)
      */
     @Builder.Default
     private int lineCharCount = 30 * 2;
@@ -34,7 +34,7 @@ public class T2IConstant {
     private int lineSpacing = 5;
 
     /**
-     * \t占用的长度
+     * 制表符宽度
      */
     @Builder.Default
     private int tableWidth = 4;
@@ -52,16 +52,10 @@ public class T2IConstant {
     private int fontPlain = Font.PLAIN;
 
     /**
-     * 每行最大字符数
-     */
-    @Builder.Default
-    private int lineCharCountMax = 0;
-
-    /**
      * 图片背景颜色
      */
     @Builder.Default
-    private Color backgroudColor = new Color(255, 252, 245);
+    private Color backgroundColor = new Color(255, 252, 245);
 
     /**
      * 字体颜色
