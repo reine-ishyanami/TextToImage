@@ -57,7 +57,6 @@ public class T2IUtil {
     public void useCustomFont(File fontFile) {
         // 创建字体对象
         Font jetbrainsMonoFont = Font.createFont(Font.TRUETYPE_FONT, fontFile);
-        System.out.println(jetbrainsMonoFont.getFontName());
         // 设置字体大小和样式
         font = jetbrainsMonoFont.deriveFont(constant.getFontPlain(), constant.getCharSize());
     }
