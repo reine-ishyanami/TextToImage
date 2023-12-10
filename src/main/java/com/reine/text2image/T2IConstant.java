@@ -52,6 +52,18 @@ public class T2IConstant {
     private int fontPlain = Font.PLAIN;
 
     /**
+     * 是否生成边框
+     */
+    @Builder.Default
+    private boolean border = true;
+
+    /**
+     * 边框宽度
+     */
+    @Builder.Default
+    private int borderWidth = 1;
+
+    /**
      * 图片背景颜色
      */
     @Builder.Default

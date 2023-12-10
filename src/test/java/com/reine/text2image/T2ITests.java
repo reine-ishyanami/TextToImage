@@ -9,6 +9,7 @@ import java.io.File;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
+import java.util.Objects;
 
 /**
  * @author reine
@@ -35,9 +36,12 @@ public class T2ITests {
         } else log.error("写入失败");
     }
 
+    /**
+     * 设置第三方字体
+     */
     @BeforeEach
     void set_font_file() {
-        String path = getClass().getResource("/font/SourceHanSansCN-Medium.otf").getPath();
+        String path = Objects.requireNonNull(getClass().getResource("/font/SourceHanSansCN-Medium.otf")).getPath();
         path = path.substring(1);
         File file = Paths.get(path).toFile();
         // 设置图片参数

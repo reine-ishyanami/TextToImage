@@ -136,6 +136,8 @@ public class T2IUtil {
 
         BufferedImage image = new BufferedImage(imageWidth, imageHeight, BufferedImage.TYPE_INT_RGB);
         Graphics2D graphics2D = image.createGraphics();
+        // 抗锯齿
+        graphics2D.setRenderingHint(RenderingHints.KEY_TEXT_ANTIALIASING, RenderingHints.VALUE_TEXT_ANTIALIAS_ON);
         graphics2D.setColor(constant.getBackgroundColor());
         // 背景颜色
         graphics2D.fillRect(0, 0, imageWidth, imageHeight);
@@ -151,8 +153,11 @@ public class T2IUtil {
             y += lineHeight;
         }
         // 边框
-        graphics2D.setColor(constant.getRectColor());
-        graphics2D.drawRect(10, 10, lineCharCountMax * constant.getCharSize() / 2 + 62, lineHeight * lines + 62);
+        if (constant.isBorder()){
+            graphics2D.setStroke(new BasicStroke(constant.getBorderWidth()));
+            graphics2D.setColor(constant.getRectColor());
+            graphics2D.drawRect(10, 10, lineCharCountMax * constant.getCharSize() / 2 + 62, lineHeight * lines + 62);
+        }
         ByteArrayOutputStream outputStream = new ByteArrayOutputStream();
         ImageIO.write(image, "JPEG", outputStream);
         return outputStream;
