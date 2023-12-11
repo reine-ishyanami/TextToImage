@@ -63,3 +63,21 @@
 | fontColor       | Color   | new Color(125, 101, 89)  | 字体颜色    |
 | rectColor       | Color   | new Color(220, 211, 196) | 边框颜色    |
 
+## 传递颜色参数时也可以使用其他方式
+
+1. 传入16进制颜色编码
+   
+   ```java
+   Color color = new Color(0xFFFCF5FF);
+   Color color = new Color(0xFFFCF5);  // 去掉最后面的透明度编码，效果与上面一行效果一样   
+   ```
+   
+2. 分别传入rgb的8位无符号数值
+
+   ```java
+   Color color = new Color(255, 252, 245); // 三位分别为r,g,b
+   ```
+   
+## 按照默认方式生成的图片示例
+
+![example](./img/example.jpg)
