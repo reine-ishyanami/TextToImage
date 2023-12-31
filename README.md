@@ -2,49 +2,69 @@
 
 ## 使用方法
 
-1. 引入依赖
+1. 引入依赖（将jar包下载后放在项目目录下的`lib`文件夹下）
+
+   ```xml
+     <dependency>
+         <groupId>com.reine</groupId>
+         <artifactId>TextToImage</artifactId>
+         <version>0.0.1</version>
+         <scope>system</scope>
+         <systemPath>${project.basedir}/lib/TextToImage-0.0.1.jar</systemPath>
+     </dependency>
+   ```
+   
+   ```groovy
+   dependencies {
+      implementation(files("lib/TextToImage-0.0.1.jar"))
+   }
+   ```
 
 2. 编写代码
 
     ```java
-    @Slf4j
-    public class T2ITests {
-    
-        private T2IUtil t2IUtil;
-    
-        @SneakyThrows
-        @Test
-        void text_to_image_test() {
-            String msg = """
-                    帮助
-                    1. echo
-                    2. ping
-                    """.indent(0);
-            Path path = Path.of("input.jpg");
-            File file;
-            if (!Files.exists(path)) file = Files.createFile(path).toFile();
-            else file = path.toFile();
-            // 由文本生成图片
-            if (t2IUtil.storeImageAfterGenerateTextImage(file, msg)) {
-                log.info("写入成功");
-            } else log.error("写入失败");
-        }
-    
-        /**
-         * 初始化工具类
-         */
-        @BeforeEach
-        void set_font_file() {
-            String path = Objects.requireNonNull(getClass().getResource("/font/SourceHanSansCN-Medium.otf")).getPath();
-            path = path.substring(1);
-            File file = Paths.get(path).toFile();
-            // 设置图片参数，初始化工具类
-            T2IConstant constant = T2IConstant.builder().build();
-            t2IUtil = new T2IUtil(constant);
-            // 设置第三方字体
-            t2IUtil.useCustomFont(file);
-        }
-    }
+   @Slf4j
+   public class T2ITests {
+   
+       private T2IUtil t2IUtil;
+   
+       @SneakyThrows
+       @Test
+       void text_to_image_test() {
+        String msg = "アドバイス\n" +
+                "Advice\n" +
+                "建议";
+           Path path = Paths.get("input.jpg");
+           File file;
+           if (!Files.exists(path)) file = Files.createFile(path).toFile();
+           else file = path.toFile();
+           assertTrue(t2IUtil.storeImageAfterGenerateTextImage(file, msg));
+       }
+   
+       @SneakyThrows
+       @Test
+       void text_to_image_convert_to_base64_test() {
+        String msg = "アドバイス\n" +
+                "Advice\n" +
+                "建议";
+           String result = t2IUtil.drawImageToBase64(msg);
+           assertTrue(result.startsWith("base64://"));
+       }
+   
+       /**
+        * 设置第三方字体
+        */
+       @BeforeEach
+       void set_font_file() {
+           String path = Objects.requireNonNull(getClass().getResource("/font/SourceHanSansCN-Medium.otf")).getPath();
+           path = path.substring(1);
+           File file = Paths.get(path).toFile();
+           // 设置图片参数
+           T2IConstant constant = T2IConstant.builder().build();
+           t2IUtil = new T2IUtil(constant);
+           t2IUtil.useCustomFont(file);
+       }
+   }
     ```
 
 ## 可设置的图片参数

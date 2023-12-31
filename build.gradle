@@ -3,14 +3,16 @@ plugins {
 }
 
 group = 'com.reine'
-version = '1.0-SNAPSHOT'
+version = '0.0.1'
 
 repositories {
     mavenCentral()
 }
 
-sourceCompatibility = JavaVersion.VERSION_21
-targetCompatibility = JavaVersion.VERSION_21
+compileJava.options.encoding = "UTF-8"
+
+sourceCompatibility = JavaVersion.VERSION_1_8
+targetCompatibility = JavaVersion.VERSION_1_8
 
 dependencies {
     testImplementation platform('org.junit:junit-bom:5.9.1')
@@ -21,8 +23,6 @@ dependencies {
     testAnnotationProcessor 'org.projectlombok:lombok:1.18.30'
     implementation 'org.slf4j:slf4j-api:2.0.9'
     testImplementation 'org.slf4j:slf4j-api:2.0.9'
-
-
 }
 
 test {

@@ -83,7 +83,7 @@ public class T2IUtil {
             } else {
                 if (c == '\t') {
                     int spaceCount = constant.getTableWidth() - width % constant.getTableWidth();  // 已有长度对TABLE_WIDTH取余
-                    result.append(" ".repeat(spaceCount));
+                    for (int i = 0; i < spaceCount; i++) result.append(" ");
                     width += spaceCount;
                 } else if (c == '\n') {
                     width = 0;

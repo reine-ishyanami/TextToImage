@@ -11,6 +11,8 @@ import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.Objects;
 
+import static org.junit.jupiter.api.Assertions.assertTrue;
+
 /**
  * @author reine
  */
@@ -22,18 +24,24 @@ public class T2ITests {
     @SneakyThrows
     @Test
     void text_to_image_test() {
-        String msg = """
-                帮助
-                1. echo
-                2. ping
-                """.indent(0);
-        Path path = Path.of("input.jpg");
+        String msg = "アドバイス\n" +
+                "Advice\n" +
+                "建议";
+        Path path = Paths.get("input.jpg");
         File file;
         if (!Files.exists(path)) file = Files.createFile(path).toFile();
         else file = path.toFile();
-        if (t2IUtil.storeImageAfterGenerateTextImage(file, msg)) {
-            log.info("写入成功");
-        } else log.error("写入失败");
+        assertTrue(t2IUtil.storeImageAfterGenerateTextImage(file, msg));
+    }
+
+    @SneakyThrows
+    @Test
+    void text_to_image_convert_to_base64_test() {
+        String msg = "アドバイス\n" +
+                "Advice\n" +
+                "建议";
+        String result = t2IUtil.drawImageToBase64(msg);
+        assertTrue(result.startsWith("base64://"));
     }
 
     /**
