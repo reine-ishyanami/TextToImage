@@ -8,15 +8,15 @@
      <dependency>
          <groupId>com.reine</groupId>
          <artifactId>TextToImage</artifactId>
-         <version>0.0.1</version>
+         <version>0.0.2</version>
          <scope>system</scope>
-         <systemPath>${project.basedir}/lib/TextToImage-0.0.1.jar</systemPath>
+         <systemPath>${project.basedir}/lib/TextToImage-0.0.2.jar</systemPath>
      </dependency>
    ```
    
    ```groovy
    dependencies {
-      implementation(files("lib/TextToImage-0.0.1.jar"))
+      implementation(files("lib/TextToImage-0.0.2.jar"))
    }
    ```
 
@@ -71,7 +71,7 @@
 
 | 参数名             | 类型      | 默认值                      | 参数含义    |
 |:----------------|:--------|:-------------------------|:--------|
-| lineCharCount   | int     | 60                       | 每行最大字符数 |
+| lineCharCount   | int     | 70                       | 每行最大字符数 |
 | charSize        | int     | 32                       | 字符大小    |
 | lineSpacing     | int     | 5                        | 行间距     |
 | tableWidth      | int     | 4                        | 制表符宽度   |

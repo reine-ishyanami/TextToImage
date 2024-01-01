@@ -119,6 +119,7 @@ public class T2IUtil {
      */
     @SneakyThrows(IOException.class)
     public ByteArrayOutputStream drawImageToByteArrayOutputStream(String msg) {
+        // 如果没有自定义字体文件，则根据参数创建字体
         if (font == null) {
             font = new Font(
                     constant.getFontName(),
@@ -126,13 +127,14 @@ public class T2IUtil {
                     constant.getCharSize()
             );
         }
+        // 行最大字符数，ASCII字符占一格，非ASCII字符占两格
         lineCharCountMax = 0;
         String outputStr = lineBreak(msg);
         int lines = outputStr.split("\n").length;
 
-        int imageWidth = lineCharCountMax * constant.getCharSize() / 2 + 84;
+        int imageWidth = lineCharCountMax * constant.getCharSize() / 2 + 80;
         int lineHeight = constant.getCharSize() + constant.getLineSpacing();
-        int imageHeight = lineHeight * lines + 84;
+        int imageHeight = lineHeight * lines + 50;
 
         BufferedImage image = new BufferedImage(imageWidth, imageHeight, BufferedImage.TYPE_INT_RGB);
         Graphics2D graphics2D = image.createGraphics();
@@ -146,17 +148,17 @@ public class T2IUtil {
 
         String[] linesArray = outputStr.split("\n");
         // 文本距离顶部的高度
-        int y = 40 + lineHeight;
+        int y = 25 + lineHeight;
         // 文本
         for (String line : linesArray) {
-            graphics2D.drawString(line, 42, y);
+            graphics2D.drawString(line, 25, y);
             y += lineHeight;
         }
         // 边框
         if (constant.isBorder()){
             graphics2D.setStroke(new BasicStroke(constant.getBorderWidth()));
             graphics2D.setColor(constant.getRectColor());
-            graphics2D.drawRect(10, 10, lineCharCountMax * constant.getCharSize() / 2 + 62, lineHeight * lines + 62);
+            graphics2D.drawRect(10, 10, lineCharCountMax * constant.getCharSize() / 2 + 60, lineHeight * lines + 30);
         }
         ByteArrayOutputStream outputStream = new ByteArrayOutputStream();
         ImageIO.write(image, "JPEG", outputStream);
