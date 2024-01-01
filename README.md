@@ -8,15 +8,15 @@
      <dependency>
          <groupId>com.reine</groupId>
          <artifactId>TextToImage</artifactId>
-         <version>0.0.1</version>
+         <version>0.0.2</version>
          <scope>system</scope>
-         <systemPath>${project.basedir}/lib/TextToImage-0.0.1.jar</systemPath>
+         <systemPath>${project.basedir}/lib/TextToImage-0.0.2.jar</systemPath>
      </dependency>
    ```
    
    ```groovy
    dependencies {
-      implementation(files("lib/TextToImage-0.0.1.jar"))
+      implementation(files("lib/TextToImage-0.0.2.jar"))
    }
    ```
 

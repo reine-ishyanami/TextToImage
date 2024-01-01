@@ -16,10 +16,10 @@ import java.awt.*;
 public class T2IConstant {
 
     /**
-     * 每行最大字符数：30个中文字符(=60英文字符)
+     * 每行最大字符数：35个中文字符(=70英文字符)
      */
     @Builder.Default
-    private int lineCharCount = 30 * 2;
+    private int lineCharCount = 35 * 2;
 
     /**
      * 字符大小
