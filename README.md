@@ -5,18 +5,29 @@
 1. 引入依赖（将jar包下载后放在项目目录下的`lib`文件夹下）
 
    ```xml
-     <dependency>
-         <groupId>com.reine</groupId>
-         <artifactId>TextToImage</artifactId>
-         <version>0.0.2</version>
-         <scope>system</scope>
-         <systemPath>${project.basedir}/lib/TextToImage-0.0.2.jar</systemPath>
-     </dependency>
+   <!-- 引入jitpack仓库  -->
+   <repositories>
+       <repository>
+           <id>jitpack.io</id>
+           <url>https://jitpack.io</url>
+       </repository>
+   </repositories>
+   <dependencies>
+       <dependency>
+           <groupId>com.github.reine-ishyanami</groupId>
+           <artifactId>TextToImage</artifactId>
+           <version>0.0.3</version>
+       </dependency>
+   </dependencies>
    ```
    
    ```groovy
+   repositories {
+      mavenCentral()
+      maven { url "https://jitpack.io" }
+   }
    dependencies {
-      implementation(files("lib/TextToImage-0.0.2.jar"))
+      implementation 'com.github.reine-ishyanami:TextToImage:0.0.3'
    }
    ```
 
