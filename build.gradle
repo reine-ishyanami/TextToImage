@@ -1,9 +1,10 @@
 plugins {
     id 'java'
+    id 'maven-publish'
 }
 
-group = 'com.reine'
-version = '0.0.2'
+group = 'com.github.reine-ishyanami'
+version = '0.0.3'
 
 repositories {
     mavenCentral()
@@ -26,4 +27,12 @@ dependencies {
 
 test {
     useJUnitPlatform()
+}
+
+publishing {
+    publications {
+        maven(MavenPublication) {
+            from components.java
+        }
+    }
 }
