@@ -160,9 +160,9 @@ public class T2ITests {
         // 设置图片参数
         T2IConstant constant = T2IConstant.builder().build();
         t2IUtil = new T2IUtil(constant);
-        // String path = Objects.requireNonNull(getClass().getResource("/font/SourceHanSansCN-Medium.otf")).getPath();
-        // path = path.substring(1);
-        // File file = Paths.get(path).toFile();
-        // t2IUtil.useCustomFont(file);
+//        String path = Objects.requireNonNull(getClass().getResource("/font/SourceHanSansCN-Medium.otf")).getPath();
+//        path = path.substring(1);
+//        File file = Paths.get(path).toFile();
+//        t2IUtil.useCustomFont(file);
     }
 }

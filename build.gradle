@@ -4,7 +4,7 @@ plugins {
 }
 
 group = 'com.github.reine-ishyanami'
-version = '0.0.3'
+version = '0.0.4'
 
 repositories {
     mavenCentral()
@@ -27,6 +27,15 @@ dependencies {
 
 test {
     useJUnitPlatform()
+}
+
+jar {
+    manifest {
+        attributes(
+                'Automatic-Module-Name': 'com.reine.text2image'
+        )
+    }
+    from sourceSets.main.output
 }
 
 publishing {
