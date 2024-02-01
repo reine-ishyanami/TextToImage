@@ -16,7 +16,7 @@
        <dependency>
            <groupId>com.github.reine-ishyanami</groupId>
            <artifactId>TextToImage</artifactId>
-           <version>0.0.3</version>
+           <version>0.0.4</version>
        </dependency>
    </dependencies>
    ```
@@ -27,7 +27,7 @@
       maven { url "https://jitpack.io" }
    }
    dependencies {
-      implementation 'com.github.reine-ishyanami:TextToImage:0.0.3'
+      implementation 'com.github.reine-ishyanami:TextToImage:0.0.4'
    }
    ```
 
