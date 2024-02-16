@@ -1,10 +1,11 @@
 plugins {
     id 'java'
     id 'maven-publish'
+    id 'org.moditect.gradleplugin' version '1.0.0-rc3'
 }
 
 group = 'com.github.reine-ishyanami'
-version = '0.0.4'
+version = '0.0.5'
 
 repositories {
     mavenCentral()
@@ -29,19 +30,19 @@ test {
     useJUnitPlatform()
 }
 
-jar {
-    manifest {
-        attributes(
-                'Automatic-Module-Name': 'com.reine.text2image'
-        )
-    }
-    from sourceSets.main.output
-}
-
 publishing {
     publications {
         maven(MavenPublication) {
             from components.java
+        }
+    }
+}
+
+moditect {
+    addMainModuleInfo{
+        jvmVersion = '9'
+        module {
+            moduleInfoFile = file('src/main/java9/module-info.java')
         }
     }
 }
