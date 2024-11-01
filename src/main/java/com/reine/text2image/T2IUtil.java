@@ -156,19 +156,18 @@ public class T2IUtil {
         LineBreakResult outputStr = lineBreak(msg);
         int lines = outputStr.getResultLine().split("\n").length;
 
-        int imageWidth = lineCharCountMax * constant.getCharSize() / 2 + 50;
-        int lineHeight = constant.getCharSize() + constant.getLineSpacing();
-        int imageHeight = lineHeight * lines + 50;
-
         // 计算最长行的宽度，然后重建画布
         int maxLineWidth;
         {
-            BufferedImage image = new BufferedImage(imageWidth, imageHeight, BufferedImage.TYPE_INT_RGB);
+            BufferedImage image = new BufferedImage(1, 1, BufferedImage.TYPE_INT_RGB);
             Graphics2D graphics2D = image.createGraphics();
             graphics2D.setFont(font);
             maxLineWidth = graphics2D.getFontMetrics().stringWidth(outputStr.getMaxLine());
         }
-        imageWidth = maxLineWidth + 50;
+
+        int imageWidth = maxLineWidth + 50;
+        int lineHeight = constant.getCharSize() + constant.getLineSpacing();
+        int imageHeight = lineHeight * lines + 50;
 
         BufferedImage image = new BufferedImage(imageWidth, imageHeight, BufferedImage.TYPE_INT_RGB);
         Graphics2D graphics2D = image.createGraphics();
