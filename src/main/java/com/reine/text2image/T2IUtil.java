@@ -1,5 +1,6 @@
 package com.reine.text2image;
 
+import lombok.Data;
 import lombok.SneakyThrows;
 
 import javax.imageio.ImageIO;
@@ -23,6 +24,9 @@ public class T2IUtil {
 
     private Font font;
 
+    /**
+     * 行最大宽度，ASCII码算1，非ASCII码算2，每行总和取最大
+     */
     private int lineCharCountMax = 0;
 
     public T2IUtil(T2IConstant constant) {
@@ -61,53 +65,73 @@ public class T2IUtil {
         font = jetbrainsMonoFont.deriveFont(constant.getFontPlain(), constant.getCharSize());
     }
 
+    @Data
+    private static class LineBreakResult {
+        String resultLine;
+        String maxLine;
+    }
+
     /**
      * 换行
      *
      * @param line 预处理字符串
      * @return 处理后的字符串
      */
-    private String lineBreak(String line) {
+    private LineBreakResult lineBreak(String line) {
+        LineBreakResult lineBreakResult = new LineBreakResult();
         lineCharCountMax = 0;
         StringBuilder result = new StringBuilder();
+        StringBuilder currentLine = new StringBuilder();
         int width = 0;
         for (char c : line.toCharArray()) {
-            if (String.valueOf(c).getBytes().length == 3) {  // 中文字符
-                if (width + 1 == constant.getLineCharCount()) {  // 剩余位置不够一个汉字
-                    width = 2;
-                    result.append('\n').append(c);
-                } else {  // 中文宽度加2，注意换行边界
-                    width += 2;
-                    result.append(c);
-                }
-            } else {
+            // ascii 字符处理
+            if (String.valueOf(c).getBytes().length == 1) {
                 if (c == '\t') {
                     int spaceCount = constant.getTableWidth() - width % constant.getTableWidth();  // 已有长度对TABLE_WIDTH取余
-                    for (int i = 0; i < spaceCount; i++) result.append(" ");
+                    for (int i = 0; i < spaceCount; i++) result.append(" ");  // 填充指定数量的空格
                     width += spaceCount;
+                    currentLine.append(c);
                 } else if (c == '\n') {
                     width = 0;
                     result.append(c);
+                    currentLine = new StringBuilder();
                 } else {
                     width++;
                     result.append(c);
+                    currentLine.append(c);
+                }
+            } else {  // 非ascii字符处理
+                if (width + 1 == constant.getLineCharCount()) {  // 剩余位置不够一个汉字
+                    width = 2;
+                    result.append('\n').append(c);  // 换行
+                    currentLine = new StringBuilder(String.valueOf(c));
+                } else {  // 中文宽度加2，注意换行边界
+                    width += 2;
+                    result.append(c);
+                    currentLine.append(c);
                 }
             }
 
-            if (width >= constant.getLineCharCount()) {
+            // 判断是否需要插入换行符
+            if (width == constant.getLineCharCount()) {
                 result.append('\n');
                 width = 0;
+                // 如果需要插入换行符，则表示此时行宽以到达最大宽度
                 lineCharCountMax = constant.getLineCharCount();
+                lineBreakResult.setMaxLine(currentLine.toString());
             }
             if (width > lineCharCountMax) {
                 lineCharCountMax = width;
+                lineBreakResult.setMaxLine(currentLine.toString());
             }
         }
 
-        if (result.toString().endsWith("\n")) {
-            return result.toString();
+        // 保证字符串最后是换行符
+        if (!result.toString().endsWith("\n")) {
+            result.append("\n");
         }
-        return result + "\n";
+        lineBreakResult.setResultLine(result.toString());
+        return lineBreakResult;
     }
 
 
@@ -129,12 +153,22 @@ public class T2IUtil {
         }
         // 行最大字符数，ASCII字符占一格，非ASCII字符占两格
         lineCharCountMax = 0;
-        String outputStr = lineBreak(msg);
-        int lines = outputStr.split("\n").length;
+        LineBreakResult outputStr = lineBreak(msg);
+        int lines = outputStr.getResultLine().split("\n").length;
 
-        int imageWidth = lineCharCountMax * constant.getCharSize() / 2 + 80;
+        int imageWidth = lineCharCountMax * constant.getCharSize() / 2 + 50;
         int lineHeight = constant.getCharSize() + constant.getLineSpacing();
         int imageHeight = lineHeight * lines + 50;
+
+        // 计算最长行的宽度，然后重建画布
+        int maxLineWidth;
+        {
+            BufferedImage image = new BufferedImage(imageWidth, imageHeight, BufferedImage.TYPE_INT_RGB);
+            Graphics2D graphics2D = image.createGraphics();
+            graphics2D.setFont(font);
+            maxLineWidth = graphics2D.getFontMetrics().stringWidth(outputStr.getMaxLine());
+        }
+        imageWidth = maxLineWidth + 50;
 
         BufferedImage image = new BufferedImage(imageWidth, imageHeight, BufferedImage.TYPE_INT_RGB);
         Graphics2D graphics2D = image.createGraphics();
@@ -146,7 +180,7 @@ public class T2IUtil {
         graphics2D.setColor(constant.getFontColor());
         graphics2D.setFont(font);
 
-        String[] linesArray = outputStr.split("\n");
+        String[] linesArray = outputStr.getResultLine().split("\n");
         // 文本距离顶部的高度
         int y = 25 + lineHeight;
         // 文本
@@ -155,10 +189,10 @@ public class T2IUtil {
             y += lineHeight;
         }
         // 边框
-        if (constant.isBorder()){
+        if (constant.isBorder()) {
             graphics2D.setStroke(new BasicStroke(constant.getBorderWidth()));
             graphics2D.setColor(constant.getRectColor());
-            graphics2D.drawRect(10, 10, lineCharCountMax * constant.getCharSize() / 2 + 60, lineHeight * lines + 30);
+            graphics2D.drawRect(10, 10, maxLineWidth + 30, lineHeight * lines + 30);
         }
         ByteArrayOutputStream outputStream = new ByteArrayOutputStream();
         ImageIO.write(image, "JPEG", outputStream);
