@@ -18,7 +18,7 @@
        <dependency>
            <groupId>com.github.reine-ishyanami</groupId>
            <artifactId>TextToImage</artifactId>
-           <version>0.0.5</version>
+           <version>0.0.7</version>
        </dependency>
    </dependencies>
    ```
@@ -29,7 +29,7 @@
       maven { url "https://jitpack.io" }
    }
    dependencies {
-      implementation 'com.github.reine-ishyanami:TextToImage:0.0.5'
+      implementation 'com.github.reine-ishyanami:TextToImage:0.0.7'
    }
    ```
 
@@ -74,8 +74,7 @@
            File file = Paths.get(path).toFile();
            // 设置图片参数
            T2IConstant constant = T2IConstant.builder().build();
-           t2IUtil = new T2IUtil(constant);
-           t2IUtil.useCustomFont(file);
+           t2IUtil = new T2IUtil(constant, file);
        }
    }
     ```
