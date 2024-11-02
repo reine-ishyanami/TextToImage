@@ -1,6 +1,5 @@
 package com.reine.text2image;
 
-import lombok.Data;
 import lombok.SneakyThrows;
 
 import javax.imageio.ImageIO;
@@ -11,6 +10,7 @@ import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.util.Base64;
+import java.util.Objects;
 
 /**
  * 文生图工具类
@@ -31,6 +31,17 @@ public class T2IUtil {
 
     public T2IUtil(T2IConstant constant) {
         this.constant = constant;
+        this.initRuler();
+    }
+
+    @SneakyThrows
+    public T2IUtil(T2IConstant constant, File fontFile) {
+        this.constant = constant;
+        // 创建字体对象
+        Font font = Font.createFont(Font.TRUETYPE_FONT, fontFile);
+        // 设置字体大小和样式
+        this.font = font.deriveFont(constant.getFontPlain(), constant.getCharSize());
+        this.initRuler();
     }
 
     /**
@@ -39,33 +50,57 @@ public class T2IUtil {
      * @param fontName 字体名称
      * @return 如果支持此字体，则返回该字体名称，否则返回""
      */
-    public String isPlatformSupportFont(String fontName) {
-        if (font == null) {
+    @SneakyThrows({IOException.class, FontFormatException.class})
+    public static String isPlatformSupportFont(String fontName, File fontFile) {
+        if (Objects.isNull(fontFile) && Objects.nonNull(fontName)) {
             GraphicsEnvironment ge = GraphicsEnvironment.getLocalGraphicsEnvironment();
             String[] fontArray = ge.getAvailableFontFamilyNames();
             for (String font : fontArray)
-                if (font.contains(fontName))
-                    return font;
+                if (font.contains(fontName)) return font;
             return "";
-        } else
+        }
+        if (Objects.nonNull(fontFile) && Objects.nonNull(fontName)) {
+            Font font = Font.createFont(Font.TRUETYPE_FONT, fontFile);
             return font.getFontName().contains(fontName) ? font.getFontName() : "";
+        }
+        throw new IllegalArgumentException("fontName should not be null");
     }
 
+    /**
+     * 画布画笔
+     */
+    private Graphics2D graphics2D;
 
     /**
-     * 使用第三方字体
+     * 初始化用于测量一行字体总宽度的画笔
+     */
+    public void initRuler() {
+        BufferedImage image = new BufferedImage(1, 1, BufferedImage.TYPE_INT_RGB);
+        this.graphics2D = image.createGraphics();
+
+        this.graphics2D.setFont(this.font == null ? font = new Font(constant.getFontName(), constant.getFontPlain(), constant.getCharSize()) : font);
+    }
+
+    /**
+     * 使用第三方字体 <br/>
+     * <p>
+     * use {@code new T2IUtil(T2IConstant, File)} to replace
      *
      * @param fontFile 字体文件
      */
+    @Deprecated(since = "0.0.7")
     @SneakyThrows
     public void useCustomFont(File fontFile) {
         // 创建字体对象
         Font jetbrainsMonoFont = Font.createFont(Font.TRUETYPE_FONT, fontFile);
         // 设置字体大小和样式
         font = jetbrainsMonoFont.deriveFont(constant.getFontPlain(), constant.getCharSize());
+        this.initRuler();
     }
 
-    @Data
+    /**
+     * 用于封装多个返回值
+     */
     private static class LineBreakResult {
         String resultLine;
         String maxLine;
@@ -118,11 +153,11 @@ public class T2IUtil {
                 width = 0;
                 // 如果需要插入换行符，则表示此时行宽以到达最大宽度
                 lineCharCountMax = constant.getLineCharCount();
-                lineBreakResult.setMaxLine(currentLine.toString());
+                lineBreakResult.maxLine = currentLine.toString();
             }
             if (width > lineCharCountMax) {
                 lineCharCountMax = width;
-                lineBreakResult.setMaxLine(currentLine.toString());
+                lineBreakResult.maxLine = currentLine.toString();
             }
         }
 
@@ -130,7 +165,7 @@ public class T2IUtil {
         if (!result.toString().endsWith("\n")) {
             result.append("\n");
         }
-        lineBreakResult.setResultLine(result.toString());
+        lineBreakResult.resultLine = result.toString();
         return lineBreakResult;
     }
 
@@ -145,25 +180,15 @@ public class T2IUtil {
     public ByteArrayOutputStream drawImageToByteArrayOutputStream(String msg) {
         // 如果没有自定义字体文件，则根据参数创建字体
         if (font == null) {
-            font = new Font(
-                    constant.getFontName(),
-                    constant.getFontPlain(),
-                    constant.getCharSize()
-            );
+            font = new Font(constant.getFontName(), constant.getFontPlain(), constant.getCharSize());
         }
         // 行最大字符数，ASCII字符占一格，非ASCII字符占两格
         lineCharCountMax = 0;
         LineBreakResult outputStr = lineBreak(msg);
-        int lines = outputStr.getResultLine().split("\n").length;
+        int lines = outputStr.resultLine.split("\n").length;
 
         // 计算最长行的宽度，然后重建画布
-        int maxLineWidth;
-        {
-            BufferedImage image = new BufferedImage(1, 1, BufferedImage.TYPE_INT_RGB);
-            Graphics2D graphics2D = image.createGraphics();
-            graphics2D.setFont(font);
-            maxLineWidth = graphics2D.getFontMetrics().stringWidth(outputStr.getMaxLine());
-        }
+        int maxLineWidth = graphics2D.getFontMetrics().stringWidth(outputStr.maxLine);
 
         int imageWidth = maxLineWidth + 50;
         int lineHeight = constant.getCharSize() + constant.getLineSpacing();
@@ -179,9 +204,9 @@ public class T2IUtil {
         graphics2D.setColor(constant.getFontColor());
         graphics2D.setFont(font);
 
-        String[] linesArray = outputStr.getResultLine().split("\n");
+        String[] linesArray = outputStr.resultLine.split("\n");
         // 文本距离顶部的高度
-        int y = 25 + lineHeight;
+        int y = 25 + lineHeight - constant.getLineSpacing();
         // 文本
         for (String line : linesArray) {
             graphics2D.drawString(line, 25, y);
@@ -196,6 +221,17 @@ public class T2IUtil {
         ByteArrayOutputStream outputStream = new ByteArrayOutputStream();
         ImageIO.write(image, "JPEG", outputStream);
         return outputStream;
+    }
+
+    /**
+     * 根据文本绘制图片
+     *
+     * @param msg 文本
+     * @return 图片二进制
+     */
+    public byte[] drawImageToByteArray(String msg) {
+        ByteArrayOutputStream outputStream = drawImageToByteArrayOutputStream(msg);
+        return outputStream.toByteArray();
     }
 
     /**

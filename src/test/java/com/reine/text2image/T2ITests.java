@@ -2,14 +2,18 @@ package com.reine.text2image;
 
 import lombok.SneakyThrows;
 import lombok.extern.slf4j.Slf4j;
+import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.MethodSource;
 
 import java.io.File;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.Objects;
+import java.util.stream.Stream;
 
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
@@ -20,6 +24,19 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 public class T2ITests {
 
     private T2IUtil t2IUtil;
+
+    /**
+     * 设置第三方字体
+     */
+    @BeforeEach
+    void set_font_file() {
+        // 设置图片参数
+        T2IConstant constant = T2IConstant.builder().build();
+        String path = Objects.requireNonNull(getClass().getResource("/font/SourceHanSansCN-Medium.otf")).getPath();
+        path = path.substring(1);
+        File file = Paths.get(path).toFile();
+        t2IUtil = new T2IUtil(constant, file);
+    }
 
     @SneakyThrows
     @Test
@@ -64,7 +81,6 @@ public class T2ITests {
         assertTrue(t2IUtil.storeImageAfterGenerateTextImage(file, msg));
     }
 
-
     @SneakyThrows
     @Test
     void text_to_image_test2() {
@@ -95,7 +111,6 @@ public class T2ITests {
         else file = path.toFile();
         assertTrue(t2IUtil.storeImageAfterGenerateTextImage(file, msg));
     }
-
 
     @SneakyThrows
     @Test
@@ -142,7 +157,6 @@ public class T2ITests {
         assertTrue(t2IUtil.storeImageAfterGenerateTextImage(file, msg));
     }
 
-
     @SneakyThrows
     @Test
     void text_to_image_convert_to_base64_test() {
@@ -153,17 +167,53 @@ public class T2ITests {
         assertTrue(result.startsWith("base64://"));
     }
 
-    /**
-     * 设置第三方字体
-     */
-    @BeforeEach
-    void set_font_file() {
-        // 设置图片参数
+    @SneakyThrows
+    @Test
+    void text_to_image_convert_to_img_test() {
         T2IConstant constant = T2IConstant.builder().build();
-        t2IUtil = new T2IUtil(constant);
-        String path = Objects.requireNonNull(getClass().getResource("/font/SourceHanSansCN-Medium.otf")).getPath();
+        T2IUtil t2IUtil = new T2IUtil(constant);
+        String msg = "アドバイス\n" +
+                     "Advice\n" +
+                     "建议";
+        Path path = Paths.get("input4.jpg");
+        File file;
+        if (!Files.exists(path)) file = Files.createFile(path).toFile();
+        else file = path.toFile();
+        t2IUtil.storeImageAfterGenerateTextImage(file, msg);
+    }
+
+    @SneakyThrows
+    @Test
+    void text_to_image_convert_to_bytearray_test() {
+        String msg = "アドバイス\n" +
+                     "Advice\n" +
+                     "建议";
+        t2IUtil.drawImageToByteArray(msg);
+    }
+
+
+    @ParameterizedTest
+    @MethodSource("provideNumbersForAddition")
+    void isPlatformSupportFont_test(String fontName, File fontFile) {
+        if (fontName == null) Assertions.assertThrows(
+                IllegalArgumentException.class,
+                () -> T2IUtil.isPlatformSupportFont(fontName, fontFile),
+                "Expected isPlatformSupportFont(fontName, fontFile) to throw, but it didn't"
+        );
+        else Assertions.assertDoesNotThrow(() -> T2IUtil.isPlatformSupportFont(fontName, fontFile));
+    }
+
+    static Stream<Object[]> provideNumbersForAddition() {
+        String path = Objects.requireNonNull(T2ITests.class.getResource("/font/SourceHanSansCN-Medium.otf")).getPath();
         path = path.substring(1);
         File file = Paths.get(path).toFile();
-        t2IUtil.useCustomFont(file);
+        return Stream.of(new Object[][]{
+                {"宋体", null},
+                {"宋体", file},
+                {null, file},
+                {null, null}
+        });
     }
+
+
 }
