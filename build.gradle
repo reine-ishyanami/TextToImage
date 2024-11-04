@@ -5,7 +5,7 @@ plugins {
 }
 
 group = 'com.github.reine-ishyanami'
-version = '0.0.5'
+version = '0.0.7'
 
 repositories {
     mavenCentral()
